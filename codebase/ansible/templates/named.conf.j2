@@ -1,0 +1,19 @@
+options {
+    listen-on port 53 { {{ dns_server_ip }}; any; };
+    listen-on-v6 port 53 { ::1; };
+    directory "/var/named";
+    allow-query { localhost; any; };
+    allow-recursion { any; };
+};
+
+zone "devmau.local" IN {
+    type master;
+    file "clim_db.zone";
+    allow-update { any; };
+};
+
+zone "204.16.172.in-addr.arpa" IN {
+    type master;
+    file "204.16.172.in-addr.arpa.zone";
+    allow-update { any; };
+};

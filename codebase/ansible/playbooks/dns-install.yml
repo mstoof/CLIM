@@ -1,0 +1,54 @@
+---
+- hosts: servers
+  become: true
+  tasks:
+    - name: 'CLIM: Install BIND DNS Server'
+      package:
+        name: bind
+        state: present
+    - name: 'CLIM: Configure DNS Server'
+      template:
+        src: ../templates/named.conf.j2
+        dest: /etc/named.conf
+      notify: Restart DNS Service
+    - name: 'CLIM: Create DNS Zone File'
+      template:
+        src: ../templates/clim_db.zone.j2
+        dest: /var/named/clim_db.zone
+      notify: Restart DNS Service
+    - name: 'CLIM: Create Reverse DNS Zone File'
+      template:
+        src: ../templates/204.16.172.in-addr.arpa.zone.j2
+        dest: /var/named/204.16.172.in-addr.arpa.zone
+      notify: Restart DNS Service
+    - name: 'CLIM: Check DNS configuration'
+      ansible.builtin.debug: var=item
+      with_file:
+        - "/etc/named.conf"
+        - "/var/named/clim_db.zone"
+        - "/var/named/204.16.172.in-addr.arpa.zone"
+    - name: 'CLIM: Assign correct permission'
+      ansible.builtin.command: 'sudo chown root:named /var/named/clim_db.zone /var/named/204.16.172.in-addr.arpa.zone'
+    - name: 'CLIM: Assign correct permission'
+      ansible.builtin.command: 'sudo chmod 640 /var/named/clim_db.zone /var/named/204.16.172.in-addr.arpa.zone'
+    - name: 'CLIM: check config'
+      ansible.builtin.command: 'systemctl status named.service'
+      register: config_check
+
+    - debug: var=config_check
+    - name: 'CLIM: Restart DNS Service'
+      service:
+        name: named
+        state: restarted
+
+
+    - name: 'CLIM: Start DNS Service'
+      service:
+        name: named
+        state: started
+        enabled: true
+  handlers:
+    - name: Restart DNS Service
+      service:
+        name: named
+        state: restarted

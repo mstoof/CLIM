@@ -1,0 +1,9 @@
+---
+ansible_connection: local
+ansible_user: mstoof
+ansible_password: CD43FC237AED
+dns_server_ip: 172.16.204.143
+dns_server_hostname: climdb.devmau.local
+domain_ip: climdb.devmau.local
+reverse_ip_octets: 204.16.172
+...
