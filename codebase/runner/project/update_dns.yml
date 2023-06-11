@@ -1,0 +1,15 @@
+---
+- hosts: dns_servers
+  gather_facts: no
+  tasks:
+    - name: Add DNS entry
+      become: yes
+      lineinfile:
+        path: /var/named/climdb.local.db
+        line: 'example.myzone.com\tIN\tA\t192.0.2.1'
+        state: present
+    - name: Reload BIND
+      become: yes
+      systemd:
+        name: named
+        state: reloaded

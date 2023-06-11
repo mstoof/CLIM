@@ -1,0 +1,2 @@
+[dns_servers]
+192.168.37.128 ansible_user=mstoof ansible_password=CD43FC237AED
